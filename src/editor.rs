@@ -1,8 +1,12 @@
-use std::{path::PathBuf, fs::{File, OpenOptions}, io::{BufReader, Read}, fmt::Display, };
+use std::{
+    fmt::Display,
+    fs::{File, OpenOptions},
+    io::{BufReader, Read},
+    path::PathBuf,
+};
 
-use anyhow::{Context, bail, Ok};
 use anyhow::Result;
-
+use anyhow::{bail, Context, Ok};
 
 const INNER_SEP: char = '┊';
 const BORDER: char = '│';
@@ -12,9 +16,9 @@ const BOTTOM_COLUMN_SEPARATOR: char = '┴';
 const RIGHT_BOTTOM: char = '┘';
 const LEFT_TOP: char = '┌';
 const TOP_COLUMN_SEPARATOR: char = '┬';
-const RIGHT_TOP:char = '┐';
+const RIGHT_TOP: char = '┐';
 
-/// Struct that represents the editor 
+/// Struct that represents the editor
 /// This contains all the logic of the editor
 /// ```rust
 ///     todo!("Add caching to Editor, so we dont have to rebuild the buffer every time we print")
@@ -25,22 +29,23 @@ pub struct Editor {
     _file: File,
     cursor: usize,
     update: bool,
-    buffer: String
+    buffer: String,
 }
 
-
 impl Editor {
-
     pub fn new(file_location: PathBuf) -> Result<Self, anyhow::Error> {
-
         let file = OpenOptions::new()
             .read(true)
-            .write(true).open(file_location).context("Unable to open file")?;
+            .write(true)
+            .open(file_location)
+            .context("Unable to open file")?;
 
         let mut buf_reader = BufReader::new(&file);
         let mut buffer = Vec::new();
 
-        buf_reader.read_to_end(&mut buffer).context("Unable to read file to buffer")?;
+        buf_reader
+            .read_to_end(&mut buffer)
+            .context("Unable to read file to buffer")?;
 
         Ok(Self {
             data: buffer,
@@ -66,17 +71,15 @@ impl Editor {
     pub fn edit(&mut self, index: usize, op: Operation) {}
 
     fn update(&mut self) {
-
         let mut output = String::new();
         for (index, item) in self.data.iter().enumerate() {
-
             if (index + 1) % 16 == 0 {
                 output.push('\n');
             } else if (index + 1) % 8 == 0 {
                 output.push(' ');
             } else {
                 let to_push = format!("{:#02x} ", item);
-                
+
                 if to_push.len() < 5 {
                     let to_push = format!("0{}", to_push);
                     output.push_str(&to_push);
@@ -84,23 +87,19 @@ impl Editor {
                     output.push_str(&to_push);
                 }
             }
-
         }
         self.update = false;
         self.buffer = output.replace("0x", "");
-
     }
 
     pub fn print(&self) -> String {
         self.buffer.clone()
-    }   
-
-
+    }
 }
 
 impl Display for Editor {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.print()) 
+        write!(f, "{}", self.print())
     }
 }
 
@@ -108,12 +107,11 @@ impl Display for Editor {
 pub enum Operation {
     Insert(u8),
     Delete,
-    Edit(u8)
+    Edit(u8),
 }
 
 pub enum Position<'a> {
-
     Header(usize),
     Footer(usize),
-    Line(&'a [u8])
+    Line(&'a [u8]),
 }
