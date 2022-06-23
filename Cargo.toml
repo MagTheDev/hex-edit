@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.58"
 structopt = "0.3.26"
+console = "0.15.0"
