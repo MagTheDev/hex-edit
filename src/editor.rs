@@ -75,7 +75,7 @@ impl Editor {
     }
 
     fn update(&mut self) {
-
+        // TODO Add coloring to selected byte
         let mut output = String::new();
         for (index, item) in self.data.iter().enumerate() {
             if (index + 1) % 16 == 0 {
