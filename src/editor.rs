@@ -68,9 +68,14 @@ impl Editor {
 
     pub fn edit_at_cursor(&mut self, op: Operation) {}
 
-    pub fn edit(&mut self, index: usize, op: Operation) {}
+    pub fn edit(&mut self, index: usize, op: Operation) {
+
+
+
+    }
 
     fn update(&mut self) {
+
         let mut output = String::new();
         for (index, item) in self.data.iter().enumerate() {
             if (index + 1) % 16 == 0 {
@@ -92,16 +97,14 @@ impl Editor {
         self.buffer = output.replace("0x", "");
     }
 
-    pub fn print(&self) -> String {
+    pub fn print(&mut self) -> String {
+        if self.update {
+            self.update();
+        }
         self.buffer.clone()
     }
 }
 
-impl Display for Editor {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.print())
-    }
-}
 
 /// An enum that represents the operation user wants to make
 pub enum Operation {

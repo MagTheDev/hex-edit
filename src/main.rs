@@ -25,8 +25,8 @@ fn main() {
 
     // reader.read_to_end(&mut buffer).context("Unable to read file contents to buffer").unwrap();
 
-    let editor = Editor::new(args.input).unwrap();
-    println!("{}", editor)
+    let mut editor = Editor::new(args.input).unwrap();
+    println!("{}", editor.print())
 }
 
 #[derive(Debug, StructOpt)]
