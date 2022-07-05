@@ -100,8 +100,9 @@ impl Editor {
     }
 
     fn update(&mut self) {
-        // TODO Add coloring to selected byte
-        
+        // TODO: Add coloring/any indication to selected byte 
+        // TODO: Optimize this maybe?
+
         // Wipe buffer
         self.buffer.clear();
 
