@@ -1,5 +1,5 @@
 use std::{
-    fmt::Display,
+    fmt::{Display, format},
     fs::{File, OpenOptions},
     io::{BufReader, Read},
     path::PathBuf,
@@ -70,31 +70,36 @@ impl Editor {
 
     pub fn edit(&mut self, index: usize, op: Operation) {
 
-
-
     }
 
     fn update(&mut self) {
         // TODO Add coloring to selected byte
-        let mut output = String::new();
-        for (index, item) in self.data.iter().enumerate() {
-            if (index + 1) % 16 == 0 {
-                output.push('\n');
-            } else if (index + 1) % 8 == 0 {
-                output.push(' ');
-            } else {
-                let to_push = format!("{:#02x} ", item);
+        
+        // Wipe buffer
+        self.buffer.clear();
 
-                if to_push.len() < 5 {
-                    let to_push = format!("0{}", to_push);
-                    output.push_str(&to_push);
-                } else {
-                    output.push_str(&to_push);
-                }
+        let mut output = String::new();
+
+        for (index, item) in self.data.iter().enumerate() {
+
+            if (index + 1) % 16 == 1 && index != 0 {
+                output.push('\n');
             }
+            
+            if (index + 1) % 8 == 1 && (index + 1) != 16 {
+                output.push(' ');
+            }
+
+            let mut hex_repr = format!(" {:#02x}", item);            
+            if hex_repr.len() < 5 {
+                hex_repr = format!(" 0{:#02x}", item);
+            }
+            output.push_str(&hex_repr);
+            
         }
         self.update = false;
         self.buffer = output.replace("0x", "");
+
     }
 
     pub fn print(&mut self) -> String {
@@ -104,7 +109,6 @@ impl Editor {
         self.buffer.clone()
     }
 }
-
 
 /// An enum that represents the operation user wants to make
 pub enum Operation {
