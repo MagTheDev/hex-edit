@@ -66,9 +66,36 @@ impl Editor {
         Ok(())
     }
 
-    pub fn edit_at_cursor(&mut self, op: Operation) {}
+    pub fn edit_at_cursor(&mut self, op: Operation) {
+        
+        match op {
+            Operation::Insert(data) => {
+                self.data.insert(self.cursor, data);
+            },
+            Operation::Delete => {
+                self.data.remove(self.cursor);
+            },
+            Operation::Edit(data) => {
+                self.data[self.cursor] = data;
+            },
+        }
+        self.update = true;
+    }
 
     pub fn edit(&mut self, index: usize, op: Operation) {
+
+        match op {
+            Operation::Insert(data) => {
+                self.data.insert(index, data);
+            },
+            Operation::Delete => {
+                self.data.remove(index);
+            },
+            Operation::Edit(data) => {
+                self.data[index] = data;
+            },
+        }
+        self.update = true;
 
     }
 
@@ -117,8 +144,3 @@ pub enum Operation {
     Edit(u8),
 }
 
-pub enum Position<'a> {
-    Header(usize),
-    Footer(usize),
-    Line(&'a [u8]),
-}
