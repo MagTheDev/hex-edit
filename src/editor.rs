@@ -1,5 +1,5 @@
+
 use std::{
-    fmt::{Display, format},
     fs::{File, OpenOptions},
     io::{BufReader, Read},
     path::PathBuf,
@@ -57,12 +57,12 @@ impl Editor {
     }
 
     pub fn move_cursor(&mut self, new_loc: usize) -> Result<()> {
-        self.update = true;
-
+        
         if new_loc > self.data.len() {
-            bail!("Index out of range");
+            bail!("Index out of range, the len is {}, but the index in {}", self.data.len(), new_loc);
         }
         self.cursor = new_loc;
+        self.update = true;
         Ok(())
     }
 
