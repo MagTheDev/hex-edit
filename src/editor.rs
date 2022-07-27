@@ -7,6 +7,7 @@ use std::{
 
 use anyhow::Result;
 use anyhow::{bail, Context, Ok};
+use console::{style};
 
 const INNER_SEP: char = '┊';
 const BORDER: char = '│';
@@ -27,7 +28,7 @@ const RIGHT_TOP: char = '┐';
 pub struct Editor {
     pub data: Vec<u8>,
     _file: File,
-    cursor: usize,
+    pub cursor: usize,
     update: bool,
     buffer: String,
 }
@@ -56,14 +57,33 @@ impl Editor {
         })
     }
 
-    pub fn move_cursor(&mut self, new_loc: usize) -> Result<()> {
-        
-        if new_loc > self.data.len() {
-            bail!("Index out of range, the len is {}, but the index in {}", self.data.len(), new_loc);
+    pub fn move_cursor(&mut self, movement: Move) {
+        match movement {
+            Move::Up => {
+                if self.cursor - 16 <= 0 {
+                    return;
+                }
+                self.cursor -= 16;
+            },
+            Move::Down => {
+                if self.cursor + 16 > self.data.len() {
+                    return;
+                }
+                self.cursor += 16
+            },
+            Move::Left => {
+                if self.cursor - 1 <= 0 {
+                    return;
+                }
+                self.cursor -= 1;
+            },
+            Move::Right => {
+                if self.cursor + 1 > self.data.len() {
+                    return;
+                }
+                self.cursor += 1;
+            },
         }
-        self.cursor = new_loc;
-        self.update = true;
-        Ok(())
     }
 
     pub fn edit_at_cursor(&mut self, op: Operation) {
@@ -99,7 +119,7 @@ impl Editor {
 
     }
 
-    fn update(&mut self) {
+    pub fn update(&mut self) {
         // TODO: Add coloring/any indication to selected byte 
         // TODO: Optimize this maybe?
 
@@ -108,13 +128,15 @@ impl Editor {
 
         let mut output = String::new();
 
-        for (index, item) in self.data.iter().enumerate() {
+        for (mut index, item) in self.data.iter().enumerate() {
 
-            if (index + 1) % 16 == 1 && index != 0 {
-                output.push('\n');
+            index += 1;
+
+            if index % 16 == 1 && index != 0 {
+                output.push_str("\r\n");
             }
             
-            if (index + 1) % 8 == 1 && (index + 1) != 16 {
+            if index % 8 == 1 && (index + 1) != 16 {
                 output.push(' ');
             }
 
@@ -122,6 +144,13 @@ impl Editor {
             if hex_repr.len() < 5 {
                 hex_repr = format!(" 0{:#02x}", item);
             }
+
+            if self.cursor == (index - 1) {
+                hex_repr = style(hex_repr).bright().cyan().to_string();
+            } else {
+                hex_repr = style(hex_repr).dim().color256(255).to_string()
+            }
+
             output.push_str(&hex_repr);
             
         }
@@ -145,3 +174,9 @@ pub enum Operation {
     Edit(u8),
 }
 
+pub enum Move {
+    Up,
+    Down,
+    Left,
+    Right
+}
