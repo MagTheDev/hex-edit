@@ -4,7 +4,7 @@ use std::{
 
 use crossterm::event::KeyEvent;
 use crossterm::terminal::disable_raw_mode;
-use crossterm::{ExecutableCommand, terminal::{self, enable_raw_mode}, execute, event::{read, Event, KeyCode, KeyModifiers}};
+use crossterm::{ExecutableCommand, terminal::{self, enable_raw_mode}, event::{read, Event, KeyCode, KeyModifiers}};
 use editor::{Editor, Move};
 use structopt::StructOpt;
 
@@ -12,18 +12,15 @@ pub mod editor;
 
 #[allow(unused)]
 
+// TODO: Fix buffer updates
+// TODO: Add editing of bytes
+// TODO: Add scrolling if the bytes cant fit on screen
+// TODO: Add bottom status bar
+// TODO: Add UTF-8 parsing of bytes
+// TODO: Change coloring for better visibility
+
 fn main() {
     let args = Args::from_args();
-
-    // let file = OpenOptions::new()
-    //     .read(true)
-    //     .open(args.input)
-    //     .context("Unable to read file").unwrap();
-
-    // let mut reader = BufReader::new(file);
-    // let mut buffer = Vec::new();
-
-    // reader.read_to_end(&mut buffer).context("Unable to read file contents to buffer").unwrap();
 
     let mut stdout = stdout();
     stdout.execute(terminal::Clear(terminal::ClearType::All)).unwrap();
